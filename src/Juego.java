@@ -29,11 +29,50 @@ public class Juego extends Canvas {
 		for (int i = 0; i < 20; i++) {
 			g.drawLine(0, TAMAÑO_FICHA*i, this.getWidth()*10000, this.getWidth());
 		}
-		crearFichaI(g);
+		crearFichaI();
+		mostrarFichaI(g);
 
 	}
+	
+	private void mostrarFichaI(Graphics g) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (campoFicha[i][j].isHitbox()) {
+					g.setColor(Color.BLUE);
+					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+				} else {
+					g.setColor(Color.GRAY);
+					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+				}
+			}
+		}
+	}
 
-	private void crearFichaI(Graphics g) {
+	private void moverFichaI(){
+		if (campoFicha[0][3].isHitbox()) {
+			campoFicha[0][0].setHitbox(true);
+			campoFicha[1][0].setHitbox(true);
+			campoFicha[2][0].setHitbox(true);
+			campoFicha[3][0].setHitbox(true);
+			campoFicha[0][1].setHitbox(false);
+			campoFicha[0][2].setHitbox(false);
+			campoFicha[0][3].setHitbox(false);
+			
+		} else{
+			campoFicha[0][0].setHitbox(true);
+			campoFicha[0][1].setHitbox(true);
+			campoFicha[0][2].setHitbox(true);
+			campoFicha[0][3].setHitbox(true);
+			campoFicha[1][0].setHitbox(false);
+			campoFicha[2][0].setHitbox(false);
+			campoFicha[3][0].setHitbox(false);
+			
+		}
+		
+	}
+
+	private void crearFichaI() {
 		// TODO Auto-generated method stub
 		campoFicha=new Ficha[4][4];
 
@@ -46,24 +85,13 @@ public class Juego extends Canvas {
 				campoFicha[i-1][j-1]=ficha;
 				aux=aux+30;
 			}
-
 		}
 		campoFicha[0][0].setHitbox(true);
 		campoFicha[1][0].setHitbox(true);
 		campoFicha[2][0].setHitbox(true);
 		campoFicha[3][0].setHitbox(true);
 
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (campoFicha[i][j].isHitbox()) {
-					g.setColor(Color.BLUE);
-					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-				} else {
-					g.setColor(Color.GRAY);
-					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-				}
-			}
-		}
+		
 	}
 
 }
