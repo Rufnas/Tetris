@@ -37,9 +37,9 @@ public class Controles extends JFrame {
 	 * Create the frame.
 	 */
 	public Controles() {
-		setResizable(true);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(500, 50, 450, 660);
+		setBounds(500, 50, 480, 680);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
