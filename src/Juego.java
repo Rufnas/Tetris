@@ -29,12 +29,12 @@ public class Juego extends Canvas {
 		for (int i = 0; i < 20; i++) {
 			g.drawLine(0, TAMAÑO_FICHA*i, this.getWidth()*10000, this.getWidth());
 		}
-		crearFichaI();
-		mostrarFichaI(g);
+		crearFicha();
+		mostrarFicha(g);
 
 	}
 	
-	private void mostrarFichaI(Graphics g) {
+	private void mostrarFicha(Graphics g) {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -49,7 +49,7 @@ public class Juego extends Canvas {
 		}
 	}
 
-	private void moverFichaI(){
+	private void moverFicha(){
 		if (campoFicha[0][3].isHitbox()) {
 			campoFicha[0][0].setHitbox(true);
 			campoFicha[1][0].setHitbox(true);
@@ -72,7 +72,7 @@ public class Juego extends Canvas {
 		
 	}
 
-	private void crearFichaI() {
+	private void crearFicha() {
 		// TODO Auto-generated method stub
 		campoFicha=new Ficha[4][4];
 
