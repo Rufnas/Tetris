@@ -9,15 +9,15 @@ public class Ficha {
 	public static final int FICHA_CUADRADO=3;
 	public static final int FICHA_T=4;
 	public static final int TAMAÑO_FICHA=30;
-	
+
 	//DATOS
 	private Color color;
 	private int alto, ancho;
 	private int posX, posY;
 	private boolean hitbox;
-	private int formaFicha;
-	
-	
+	private int formaFicha,fichaPos;
+
+
 	public Color getColor() {
 		return color;
 	}
@@ -87,7 +87,7 @@ public class Ficha {
 		this.formaFicha=FICHA_I;
 		this.hitbox=false;
 	}
-	
+
 	public Ficha(int posX, int posY, Color color, int formaFicha, boolean hitbox){
 		this.posX=posX;
 		this.posY=posY;
