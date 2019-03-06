@@ -21,6 +21,7 @@ public class Juego extends Canvas {
 
 	/**
 	 * Create the panel.
+	 * Aqui estoy probando que la conexion desde clase funcione
 	 */
 	public Juego(Controles controles) {
 		setBackground(Color.BLACK);
