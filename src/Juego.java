@@ -1,9 +1,13 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
+
+import javax.swing.Timer;
 
 public class Juego extends Canvas {
 	public static final int FICHA_L=0;
@@ -11,17 +15,24 @@ public class Juego extends Canvas {
 	public static final int FICHA_S=2;
 	public static final int FICHA_CUADRADO=3;
 	public static final int FICHA_T=4;
+	public static final int NO_FICHA=5;
 	public static final int TAMAÑO_FICHA=30;
+	public static final int FACIL=3;
+	public static final int NORMAL=2;
+	public static final int DIFICIL=1;
 
 	private Controles controles;
+	private Ficha limiteAbajo[];
+	private Ficha fichaInmovil[];
 	private Ficha ficha;
 	private Ficha campoFicha[][];
 	private Random r=new Random();
+	private Timer reloj;
+	int contador=0;
 	int fichaPos = 3;
 
 	/**
 	 * Create the panel.
-	 * Aqui estoy probando que la conexion desde clase funcione
 	 */
 	public Juego(Controles controles) {
 		setBackground(Color.BLACK);
@@ -29,30 +40,79 @@ public class Juego extends Canvas {
 		ficha=new Ficha();
 		registrarEventos();
 		crearFicha();
+		fichaInmovil=new Ficha[100];
+		limiteAbajo=new Ficha[10];
 	}
 
 	private void registrarEventos() {
+		reloj=new Timer(1000, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				requestFocus();//ESTO ES TEMPORAL
+				contador++;
+				int dificultad = FACIL;
+				if (dificultad==FACIL) {
+					if (contador==3) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								//if () {
+									campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);	
+								//}
+								
+							}
+						}
+						contador=0;
+					}
+					repaint();
+				}
+				if (dificultad==NORMAL) {
+					if (contador==2) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
+							}
+						}
+						contador=0;
+					}
+					repaint();
+				}
+				if(dificultad==DIFICIL){
+					if (contador==1) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
+							}
+						}
+						contador=0;
+					}
+					repaint();
+				}
+				
+			}
+		});
+		reloj.start();
+
 		addKeyListener(new KeyListener() {
-			
+
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				if (key==KeyEvent.VK_SPACE) {
 					fichaPos++;
 					if(fichaPos>=4) fichaPos=0;
-					repaint();
 				}
 				if (key==KeyEvent.VK_DOWN) {
 					for (int i = 0; i < 4; i++) {
@@ -60,7 +120,6 @@ public class Juego extends Canvas {
 							campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
 						}
 					}
-					repaint();
 				}
 				if (key==KeyEvent.VK_RIGHT) {
 					for (int i = 0; i < 4; i++) {
@@ -68,7 +127,6 @@ public class Juego extends Canvas {
 							campoFicha[i][j].setPosX(campoFicha[i][j].getPosX()+30);
 						}
 					}
-					repaint();
 				}
 				if (key==KeyEvent.VK_LEFT) {
 					for (int i = 0; i < 4; i++) {
@@ -76,11 +134,11 @@ public class Juego extends Canvas {
 							campoFicha[i][j].setPosX(campoFicha[i][j].getPosX()-30);
 						}
 					}
-					repaint();
 				}
+				repaint();
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -94,6 +152,14 @@ public class Juego extends Canvas {
 		for (int i = 0; i < 20; i++) {
 			g.drawLine(0, TAMAÑO_FICHA*i, this.getWidth()*10000, this.getWidth());
 		}
+		//ESTO QUE SETA AQUI ABAJO ES PARA HACER EL HITBOX DEL FONDO
+		ficha=new Ficha(60, 120, Color.WHITE, NO_FICHA, false);
+		limiteAbajo[0]=ficha;
+		ficha=new Ficha(90, 120, Color.WHITE, NO_FICHA, false);
+		limiteAbajo[1]=ficha;
+		g.setColor(limiteAbajo[0].getColor());
+		g.fillRect(limiteAbajo[0].getPosX(), limiteAbajo[0].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+		g.fillRect(limiteAbajo[1].getPosX(), limiteAbajo[1].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 		moverFicha(campoFicha[0][0].getFormaFicha(), fichaPos);
 		mostrarFicha(g);
 	}
@@ -244,7 +310,7 @@ public class Juego extends Canvas {
 				campoFicha[i][j].setHitbox(false);
 			}
 		}
-		
+
 	}
 
 	private void crearFicha() {

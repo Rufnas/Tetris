@@ -15,7 +15,7 @@ public class Ficha {
 	private int alto, ancho;
 	private int posX, posY;
 	private boolean hitbox;
-	private int formaFicha,fichaPos;
+	private int formaFicha;
 
 
 	public Color getColor() {

@@ -16,6 +16,10 @@ public class Controles extends JFrame {
 	private Juego juego;
 	
 	private ButtonGroup grpNiveles;
+	private JRadioButton rdbtnFacil;
+	private JRadioButton rdbtnMedio;
+	private JRadioButton rdbtnDificil;
+	private JButton btnJugar;
 
 	/**
 	 * Launch the application.
@@ -51,7 +55,7 @@ public class Controles extends JFrame {
 		
 		grpNiveles=new ButtonGroup();
 		
-		JButton btnJugar = new JButton("Jugar");
+		btnJugar = new JButton("Jugar");
 		btnJugar.setBounds(22, 131, 89, 23);
 		contentPane.add(btnJugar);
 		
@@ -59,16 +63,16 @@ public class Controles extends JFrame {
 		btnCerrar.setBounds(22, 185, 89, 23);
 		contentPane.add(btnCerrar);
 		
-		JRadioButton rdbtnFacil = new JRadioButton("Facil");
+		rdbtnFacil = new JRadioButton("Facil");
 		rdbtnFacil.setSelected(true);
 		rdbtnFacil.setBounds(30, 49, 63, 23);
 		contentPane.add(rdbtnFacil);
 		
-		JRadioButton rdbtnMedio = new JRadioButton("Medio");
+		rdbtnMedio = new JRadioButton("Medio");
 		rdbtnMedio.setBounds(30, 75, 63, 23);
 		contentPane.add(rdbtnMedio);
 		
-		JRadioButton rdbtnDificil = new JRadioButton("Dificil");
+		rdbtnDificil = new JRadioButton("Dificil");
 		rdbtnDificil.setBounds(30, 101, 63, 23);
 		contentPane.add(rdbtnDificil);
 		
