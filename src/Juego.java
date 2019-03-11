@@ -1,6 +1,7 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -30,6 +31,8 @@ public class Juego extends Canvas {
 	private Timer reloj;
 	int contador=0;
 	int fichaPos = 3;
+	private Rectangle rCuad[];
+	private Rectangle hitboxFicha[];
 
 	/**
 	 * Create the panel.
@@ -50,6 +53,8 @@ public class Juego extends Canvas {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				requestFocus();//ESTO ES TEMPORAL
+				agregarHitbox();
+				limiteAbajo();	
 				contador++;
 				int dificultad = FACIL;
 				if (dificultad==FACIL) {
@@ -88,8 +93,8 @@ public class Juego extends Canvas {
 					}
 					repaint();
 				}
-				
 			}
+			
 		});
 		reloj.start();
 
@@ -135,7 +140,7 @@ public class Juego extends Canvas {
 						}
 					}
 				}
-				repaint();
+				repaint();				
 			}
 		});
 
@@ -153,15 +158,32 @@ public class Juego extends Canvas {
 			g.drawLine(0, TAMAÑO_FICHA*i, this.getWidth()*10000, this.getWidth());
 		}
 		//ESTO QUE SETA AQUI ABAJO ES PARA HACER EL HITBOX DEL FONDO
-		ficha=new Ficha(60, 120, Color.WHITE, NO_FICHA, false);
-		limiteAbajo[0]=ficha;
-		ficha=new Ficha(90, 120, Color.WHITE, NO_FICHA, false);
-		limiteAbajo[1]=ficha;
+		limiteAbajo();
 		g.setColor(limiteAbajo[0].getColor());
-		g.fillRect(limiteAbajo[0].getPosX(), limiteAbajo[0].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-		g.fillRect(limiteAbajo[1].getPosX(), limiteAbajo[1].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+		for (int i = 0; i < 10; i++) {
+			g.fillRect(limiteAbajo[i].getPosX(), limiteAbajo[i].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+		}
 		moverFicha(campoFicha[0][0].getFormaFicha(), fichaPos);
 		mostrarFicha(g);
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (rCuad[i].intersects(hitboxFicha[j])) {
+					System.out.println("HOLAAAAAA");
+				}
+			}
+		}
+	}
+
+	private void limiteAbajo() {
+		rCuad=new Rectangle[10];
+		ficha=new Ficha(0, 570, Color.WHITE, NO_FICHA, false);
+		limiteAbajo[0]=ficha;
+		for (int i = 1; i < 10; i++) {
+			ficha=new Ficha(i*30, 570, Color.WHITE, NO_FICHA, false);
+			limiteAbajo[i]=ficha;
+			rCuad[i]=new Rectangle(limiteAbajo[i].getPosX(), limiteAbajo[i].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+		}
+		
 	}
 
 	private void mostrarFicha(Graphics g) {
@@ -312,7 +334,24 @@ public class Juego extends Canvas {
 		}
 
 	}
-
+	
+	private void agregarHitbox(){
+		hitboxFicha=new Rectangle[4];
+		int contador=0;
+		for (int i = 1; i < 5; i++) {
+			int aux=0;
+			int aux2=30;
+			aux2=aux2*i;
+			for (int j = 1; j < 5; j++) {
+				if(campoFicha[i-1][j-1].isHitbox()){
+					hitboxFicha[0]=new Rectangle(campoFicha[i-1][j-1].getPosX(), campoFicha[i-1][j-1].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+					contador++;
+				}
+				aux=aux+30;
+			}
+		}
+	}
+	
 	private void crearFicha() {
 		// TODO Auto-generated method stub
 		int numeroFicha=r.nextInt(4);
