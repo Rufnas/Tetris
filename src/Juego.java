@@ -26,12 +26,12 @@ public class Juego extends Canvas {
 	private Ficha limiteAbajo[];
 	private Ficha fichaInmovil[];
 	private Ficha ficha;
-	private Ficha campoFicha[][];
+	private Ficha campoFicha1[][];
+	private Ficha campoFicha2[][];
 	private Random r=new Random();
 	private Timer reloj;
 	int contador=0;
 	int fichaPos = 3;
-	private Rectangle rCuad[];
 	private Rectangle hitboxFicha[];
 
 	/**
@@ -42,7 +42,7 @@ public class Juego extends Canvas {
 		this.controles=controles;
 		ficha=new Ficha();
 		registrarEventos();
-		crearFicha();
+		crearPrimeraFicha();
 		fichaInmovil=new Ficha[100];
 		limiteAbajo=new Ficha[10];
 	}
@@ -56,15 +56,12 @@ public class Juego extends Canvas {
 				agregarHitbox();
 				limiteAbajo();	
 				contador++;
-				int dificultad = FACIL;
+				int dificultad = NORMAL;
 				if (dificultad==FACIL) {
 					if (contador==3) {
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
-								//if () {
-									campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);	
-								//}
-								
+								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
 							}
 						}
 						contador=0;
@@ -75,7 +72,7 @@ public class Juego extends Canvas {
 					if (contador==2) {
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
-								campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
+								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
 							}
 						}
 						contador=0;
@@ -86,15 +83,16 @@ public class Juego extends Canvas {
 					if (contador==1) {
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
-								campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
+								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
 							}
 						}
 						contador=0;
 					}
 					repaint();
 				}
+				comprobarFondo();
 			}
-			
+
 		});
 		reloj.start();
 
@@ -115,35 +113,51 @@ public class Juego extends Canvas {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
-				if (key==KeyEvent.VK_SPACE) {
-					fichaPos++;
-					if(fichaPos>=4) fichaPos=0;
-				}
-				if (key==KeyEvent.VK_DOWN) {
-					for (int i = 0; i < 4; i++) {
-						for (int j = 0; j < 4; j++) {
-							campoFicha[i][j].setPosY(campoFicha[i][j].getPosY()+30);
+				if (reloj.isRunning()) {
+					if (key==KeyEvent.VK_SPACE) {
+						fichaPos++;
+						if(fichaPos>=4) fichaPos=0;
+					}
+					if (key==KeyEvent.VK_DOWN) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
+							}
 						}
 					}
-				}
-				if (key==KeyEvent.VK_RIGHT) {
-					for (int i = 0; i < 4; i++) {
-						for (int j = 0; j < 4; j++) {
-							campoFicha[i][j].setPosX(campoFicha[i][j].getPosX()+30);
+					if (key==KeyEvent.VK_RIGHT) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()+30);
+							}
 						}
 					}
-				}
-				if (key==KeyEvent.VK_LEFT) {
-					for (int i = 0; i < 4; i++) {
-						for (int j = 0; j < 4; j++) {
-							campoFicha[i][j].setPosX(campoFicha[i][j].getPosX()-30);
+					if (key==KeyEvent.VK_LEFT) {
+						for (int i = 0; i < 4; i++) {
+							for (int j = 0; j < 4; j++) {
+								campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()-30);
+							}
 						}
 					}
+					comprobarFondo();
 				}
+				
 				repaint();				
 			}
 		});
 
+	}
+
+	protected void comprobarFondo() {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 10; k++) {
+					if(campoFicha1[i][j].isHitbox() && campoFicha1[i][j].getPosX()==limiteAbajo[k].getPosX() && campoFicha1[i][j].getPosY()==limiteAbajo[k].getPosY()){
+						reloj.stop();
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -163,39 +177,30 @@ public class Juego extends Canvas {
 		for (int i = 0; i < 10; i++) {
 			g.fillRect(limiteAbajo[i].getPosX(), limiteAbajo[i].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 		}
-		moverFicha(campoFicha[0][0].getFormaFicha(), fichaPos);
+		moverFicha(campoFicha1[0][0].getFormaFicha(), fichaPos);
 		mostrarFicha(g);
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 10; j++) {
-				if (rCuad[i].intersects(hitboxFicha[j])) {
-					System.out.println("HOLAAAAAA");
-				}
-			}
-		}
 	}
 
 	private void limiteAbajo() {
-		rCuad=new Rectangle[10];
 		ficha=new Ficha(0, 570, Color.WHITE, NO_FICHA, false);
 		limiteAbajo[0]=ficha;
 		for (int i = 1; i < 10; i++) {
 			ficha=new Ficha(i*30, 570, Color.WHITE, NO_FICHA, false);
 			limiteAbajo[i]=ficha;
-			rCuad[i]=new Rectangle(limiteAbajo[i].getPosX(), limiteAbajo[i].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 		}
-		
+
 	}
 
 	private void mostrarFicha(Graphics g) {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (campoFicha[i][j].isHitbox()) {
+				if (campoFicha1[i][j].isHitbox()) {
 					g.setColor(Color.BLUE);
-					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 				} else {
 					g.setColor(Color.GRAY);
-					g.fillRect(campoFicha[i][j].getPosX(), campoFicha[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 				}
 			}
 		}
@@ -207,84 +212,84 @@ public class Juego extends Canvas {
 		case FICHA_L:
 			if (posFicha==0) {
 				eliminarHitboxTodo();
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
-				campoFicha[2][1].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
+				campoFicha1[2][1].setHitbox(true);
 			} else if(posFicha==1){
 				eliminarHitboxTodo();
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[2][1].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
-				campoFicha[2][3].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[2][1].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
+				campoFicha1[2][3].setHitbox(true);
 			} else if(posFicha==2){
 				eliminarHitboxTodo();
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][1].setHitbox(true);
-				campoFicha[3][1].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][1].setHitbox(true);
+				campoFicha1[3][1].setHitbox(true);
 			} else if(posFicha==3){
 				eliminarHitboxTodo();
-				campoFicha[1][0].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
+				campoFicha1[1][0].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
 			}
 			break;
 			//MOVIMIENTOS PARA LA FICHA DE TIPO I
 		case FICHA_I:
 			if (posFicha==0) {
 				eliminarHitboxTodo();
-				campoFicha[0][0].setHitbox(true);
-				campoFicha[1][0].setHitbox(true);
-				campoFicha[2][0].setHitbox(true);
-				campoFicha[3][0].setHitbox(true);			
+				campoFicha1[0][0].setHitbox(true);
+				campoFicha1[1][0].setHitbox(true);
+				campoFicha1[2][0].setHitbox(true);
+				campoFicha1[3][0].setHitbox(true);			
 			} else if(posFicha==1){
 				eliminarHitboxTodo();
-				campoFicha[0][0].setHitbox(true);
-				campoFicha[0][1].setHitbox(true);
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[0][3].setHitbox(true);
+				campoFicha1[0][0].setHitbox(true);
+				campoFicha1[0][1].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[0][3].setHitbox(true);
 			} else if (posFicha==2) {
 				eliminarHitboxTodo();
-				campoFicha[0][0].setHitbox(true);
-				campoFicha[1][0].setHitbox(true);
-				campoFicha[2][0].setHitbox(true);
-				campoFicha[3][0].setHitbox(true);			
+				campoFicha1[0][0].setHitbox(true);
+				campoFicha1[1][0].setHitbox(true);
+				campoFicha1[2][0].setHitbox(true);
+				campoFicha1[3][0].setHitbox(true);			
 			} else if(posFicha==3){
 				eliminarHitboxTodo();
-				campoFicha[0][0].setHitbox(true);
-				campoFicha[0][1].setHitbox(true);
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[0][3].setHitbox(true);
+				campoFicha1[0][0].setHitbox(true);
+				campoFicha1[0][1].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[0][3].setHitbox(true);
 			}
 			break;
 			//MOVIMIENTOS PARA LA FICHA DE TIPO S
 		case FICHA_S:
 			if (posFicha==0) {
 				eliminarHitboxTodo();
-				campoFicha[2][0].setHitbox(true);
-				campoFicha[2][1].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
+				campoFicha1[2][0].setHitbox(true);
+				campoFicha1[2][1].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
 			}else if(posFicha==1){
 				eliminarHitboxTodo();
-				campoFicha[0][1].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
+				campoFicha1[0][1].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
 			}else if (posFicha==2) {
 				eliminarHitboxTodo();
-				campoFicha[2][0].setHitbox(true);
-				campoFicha[2][1].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
+				campoFicha1[2][0].setHitbox(true);
+				campoFicha1[2][1].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
 			}else if(posFicha==3){
 				eliminarHitboxTodo();
-				campoFicha[0][1].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
+				campoFicha1[0][1].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
 			}
 			break;
 			//MOVIMIENTOS PARA LA FICHA DE TIPO CUADRADO, EL CUAL NO HAY
@@ -295,28 +300,28 @@ public class Juego extends Canvas {
 		case FICHA_T:
 			if (posFicha==0) {
 				eliminarHitboxTodo();
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[1][3].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[1][3].setHitbox(true);
 			}else if(posFicha==1){
 				eliminarHitboxTodo();
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
-				campoFicha[1][3].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
+				campoFicha1[1][3].setHitbox(true);
 			}else if(posFicha==2){
 				eliminarHitboxTodo();
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[1][3].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[1][3].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
 			}else if(posFicha==3){
 				eliminarHitboxTodo();
-				campoFicha[1][1].setHitbox(true);
-				campoFicha[0][2].setHitbox(true);
-				campoFicha[1][2].setHitbox(true);
-				campoFicha[2][2].setHitbox(true);
+				campoFicha1[1][1].setHitbox(true);
+				campoFicha1[0][2].setHitbox(true);
+				campoFicha1[1][2].setHitbox(true);
+				campoFicha1[2][2].setHitbox(true);
 			}
 			break;
 		default:
@@ -329,34 +334,32 @@ public class Juego extends Canvas {
 		//ELIMINA EL HITBOX DE TODO EL CAMPO DE LA FICHA, SOLO USADO PARA HACER MOVIMIENTOS DE LA FICHA
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				campoFicha[i][j].setHitbox(false);
+				campoFicha1[i][j].setHitbox(false);
 			}
 		}
 
 	}
-	
+	//POR AHORA SE INUTIL-----------------------------------------------------------------------------------------
 	private void agregarHitbox(){
 		hitboxFicha=new Rectangle[4];
-		int contador=0;
 		for (int i = 1; i < 5; i++) {
 			int aux=0;
 			int aux2=30;
 			aux2=aux2*i;
 			for (int j = 1; j < 5; j++) {
-				if(campoFicha[i-1][j-1].isHitbox()){
-					hitboxFicha[0]=new Rectangle(campoFicha[i-1][j-1].getPosX(), campoFicha[i-1][j-1].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-					contador++;
+				if(campoFicha1[i-1][j-1].isHitbox()){
+					hitboxFicha[0]=new Rectangle(campoFicha1[i-1][j-1].getPosX(), campoFicha1[i-1][j-1].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 				}
 				aux=aux+30;
 			}
 		}
 	}
-	
-	private void crearFicha() {
+
+	private void crearPrimeraFicha() {
 		// TODO Auto-generated method stub
 		int numeroFicha=r.nextInt(4);
 		//numeroFicha=2; //Numero provisional para probar la creacion de fichas
-		campoFicha=new Ficha[4][4];
+		campoFicha1=new Ficha[4][4];
 		switch (numeroFicha) {
 		case 0:
 			for (int i = 1; i < 5; i++) {
@@ -365,14 +368,14 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_L, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[1][0].setHitbox(true);
-			campoFicha[1][1].setHitbox(true);
-			campoFicha[1][2].setHitbox(true);
-			campoFicha[2][2].setHitbox(true);
+			campoFicha1[1][0].setHitbox(true);
+			campoFicha1[1][1].setHitbox(true);
+			campoFicha1[1][2].setHitbox(true);
+			campoFicha1[2][2].setHitbox(true);
 			break;
 		case 1:
 			for (int i = 1; i < 5; i++) {
@@ -381,14 +384,14 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_I, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[0][0].setHitbox(true);
-			campoFicha[1][0].setHitbox(true);
-			campoFicha[2][0].setHitbox(true);
-			campoFicha[3][0].setHitbox(true);
+			campoFicha1[0][0].setHitbox(true);
+			campoFicha1[1][0].setHitbox(true);
+			campoFicha1[2][0].setHitbox(true);
+			campoFicha1[3][0].setHitbox(true);
 			break;
 		case 2:
 			for (int i = 1; i < 5; i++) {
@@ -397,14 +400,14 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_S, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[0][1].setHitbox(true);
-			campoFicha[1][1].setHitbox(true);
-			campoFicha[1][2].setHitbox(true);
-			campoFicha[2][2].setHitbox(true);
+			campoFicha1[0][1].setHitbox(true);
+			campoFicha1[1][1].setHitbox(true);
+			campoFicha1[1][2].setHitbox(true);
+			campoFicha1[2][2].setHitbox(true);
 			break;
 		case 3:
 			for (int i = 1; i < 5; i++) {
@@ -413,14 +416,14 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_CUADRADO, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[1][1].setHitbox(true);
-			campoFicha[2][1].setHitbox(true);
-			campoFicha[1][2].setHitbox(true);
-			campoFicha[2][2].setHitbox(true);
+			campoFicha1[1][1].setHitbox(true);
+			campoFicha1[2][1].setHitbox(true);
+			campoFicha1[1][2].setHitbox(true);
+			campoFicha1[2][2].setHitbox(true);
 			break;
 		case 4:
 			for (int i = 1; i < 5; i++) {
@@ -429,14 +432,14 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_T, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[1][1].setHitbox(true);
-			campoFicha[0][2].setHitbox(true);
-			campoFicha[1][2].setHitbox(true);
-			campoFicha[2][2].setHitbox(true);
+			campoFicha1[1][1].setHitbox(true);
+			campoFicha1[0][2].setHitbox(true);
+			campoFicha1[1][2].setHitbox(true);
+			campoFicha1[2][2].setHitbox(true);
 			break;
 		default:
 			for (int i = 1; i < 5; i++) {
@@ -445,18 +448,120 @@ public class Juego extends Canvas {
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
 					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_CUADRADO, false);
-					campoFicha[i-1][j-1]=ficha;
+					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
 			}
-			campoFicha[0][0].setHitbox(true);
-			campoFicha[1][0].setHitbox(true);
-			campoFicha[2][0].setHitbox(true);
-			campoFicha[3][0].setHitbox(true);
+			campoFicha1[0][0].setHitbox(true);
+			campoFicha1[1][0].setHitbox(true);
+			campoFicha1[2][0].setHitbox(true);
+			campoFicha1[3][0].setHitbox(true);
 			break;
 		}
-
-
 	}
-
+	
+	private void crearFichaSiguiente() {
+		// TODO Auto-generated method stub
+		int numeroFicha=r.nextInt(4);
+		//numeroFicha=2; //Numero provisional para probar la creacion de fichas
+		campoFicha2=new Ficha[4][4];
+		switch (numeroFicha) {
+		case 0:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_L, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[1][0].setHitbox(true);
+			campoFicha2[1][1].setHitbox(true);
+			campoFicha2[1][2].setHitbox(true);
+			campoFicha2[2][2].setHitbox(true);
+			break;
+		case 1:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_I, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[0][0].setHitbox(true);
+			campoFicha2[1][0].setHitbox(true);
+			campoFicha2[2][0].setHitbox(true);
+			campoFicha2[3][0].setHitbox(true);
+			break;
+		case 2:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_S, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[0][1].setHitbox(true);
+			campoFicha2[1][1].setHitbox(true);
+			campoFicha2[1][2].setHitbox(true);
+			campoFicha2[2][2].setHitbox(true);
+			break;
+		case 3:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_CUADRADO, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[1][1].setHitbox(true);
+			campoFicha2[2][1].setHitbox(true);
+			campoFicha2[1][2].setHitbox(true);
+			campoFicha2[2][2].setHitbox(true);
+			break;
+		case 4:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_T, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[1][1].setHitbox(true);
+			campoFicha2[0][2].setHitbox(true);
+			campoFicha2[1][2].setHitbox(true);
+			campoFicha2[2][2].setHitbox(true);
+			break;
+		default:
+			for (int i = 1; i < 5; i++) {
+				int aux=0;
+				int aux2=30;
+				aux2=aux2*i;
+				for (int j = 1; j < 5; j++) {
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_CUADRADO, false);
+					campoFicha2[i-1][j-1]=ficha;
+					aux=aux+30;
+				}
+			}
+			campoFicha2[0][0].setHitbox(true);
+			campoFicha2[1][0].setHitbox(true);
+			campoFicha2[2][0].setHitbox(true);
+			campoFicha2[3][0].setHitbox(true);
+			break;
+		}
+	}
 }
