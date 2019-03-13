@@ -1,6 +1,7 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,9 @@ public class Juego extends Canvas {
 	int contador=0;
 	int fichaPos = 3;
 	private Rectangle hitboxFicha[];
+	//Para el doble buffer (para eliminar el parpadeo al dibujar)
+	private Graphics pantVirtual;
+	private Image buffer;
 
 	/**
 	 * Create the panel.
@@ -180,6 +184,17 @@ public class Juego extends Canvas {
 		moverFicha(campoFicha1[0][0].getFormaFicha(), fichaPos);
 		mostrarFicha(g);
 	}
+	
+	@Override
+	public void update(Graphics g) {
+		// TODO Auto-generated method stub
+		//super.update(g);
+		buffer=createImage(300, 600);
+		pantVirtual=buffer.getGraphics();
+		paint(pantVirtual);
+		//volcar la imagen de la pantVirtual sobre la pantalla real
+		g.drawImage(buffer, 0, 0, 300, 600, this);
+	}
 
 	private void limiteAbajo() {
 		ficha=new Ficha(0, 570, Color.WHITE, NO_FICHA, false);
@@ -196,11 +211,12 @@ public class Juego extends Canvas {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				if (campoFicha1[i][j].isHitbox()) {
-					g.setColor(Color.BLUE);
+					g.setColor(campoFicha1[i][j].getColor());
 					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+					
 				} else {
-					g.setColor(Color.GRAY);
-					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+					/*g.setColor(Color.GRAY);
+					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);*/
 				}
 			}
 		}
@@ -367,7 +383,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_L, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.BLUE, FICHA_L, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
@@ -383,7 +399,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_I, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.GREEN, FICHA_I, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
@@ -399,7 +415,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_S, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.RED, FICHA_S, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
@@ -415,7 +431,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_CUADRADO, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.MAGENTA, FICHA_CUADRADO, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
@@ -431,7 +447,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_T, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.ORANGE, FICHA_T, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
