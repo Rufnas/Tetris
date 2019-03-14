@@ -158,7 +158,7 @@ public class Juego extends Canvas {
 	protected void comprobarLinea() {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < 20; i++) {
-			
+
 		}
 	}
 
