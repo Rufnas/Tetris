@@ -14,6 +14,7 @@ public class Controles extends JFrame {
 	private JPanel contentPane;
 	
 	private Juego juego;
+	private NextFicha nextFicha;
 	
 	private ButtonGroup grpNiveles;
 	private JRadioButton rdbtnFacil;
@@ -43,37 +44,41 @@ public class Controles extends JFrame {
 	public Controles() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(500, 50, 480, 680);
+		setBounds(500, 50, 570, 680);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		juego=new Juego(Controles.this);
-		juego.setBounds(136, 21, 300, 600);
+		juego.setBounds(214, 21, 300, 600);
 		contentPane.add(juego);
+		
+		nextFicha=new NextFicha(Controles.this);
+		nextFicha.setBounds(34, 276, 150, 150);
+		contentPane.add(nextFicha);
 		
 		grpNiveles=new ButtonGroup();
 		
 		btnJugar = new JButton("Jugar");
-		btnJugar.setBounds(22, 131, 89, 23);
+		btnJugar.setBounds(58, 131, 89, 23);
 		contentPane.add(btnJugar);
 		
 		JButton btnCerrar = new JButton("Cerrar");
-		btnCerrar.setBounds(22, 185, 89, 23);
+		btnCerrar.setBounds(58, 185, 89, 23);
 		contentPane.add(btnCerrar);
 		
 		rdbtnFacil = new JRadioButton("Facil");
 		rdbtnFacil.setSelected(true);
-		rdbtnFacil.setBounds(30, 49, 63, 23);
+		rdbtnFacil.setBounds(66, 49, 63, 23);
 		contentPane.add(rdbtnFacil);
 		
 		rdbtnMedio = new JRadioButton("Medio");
-		rdbtnMedio.setBounds(30, 75, 63, 23);
+		rdbtnMedio.setBounds(66, 75, 63, 23);
 		contentPane.add(rdbtnMedio);
 		
 		rdbtnDificil = new JRadioButton("Dificil");
-		rdbtnDificil.setBounds(30, 101, 63, 23);
+		rdbtnDificil.setBounds(66, 101, 63, 23);
 		contentPane.add(rdbtnDificil);
 		
 		grpNiveles.add(rdbtnFacil);
@@ -81,7 +86,7 @@ public class Controles extends JFrame {
 		grpNiveles.add(rdbtnDificil);
 		
 		JLabel lblEligeNivel = new JLabel("Elige nivel");
-		lblEligeNivel.setBounds(30, 21, 63, 14);
+		lblEligeNivel.setBounds(66, 21, 63, 14);
 		contentPane.add(lblEligeNivel);
 	}
 }

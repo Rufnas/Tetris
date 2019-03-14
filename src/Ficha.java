@@ -9,14 +9,24 @@ public class Ficha {
 	public static final int FICHA_CUADRADO=3;
 	public static final int FICHA_T=4;
 	public static final int TAMAÑO_FICHA=30;
+	public static final int LIBRE=0;
+	public static final int EMPAREJADO=1;
 
 	//DATOS
 	private Color color;
 	private int alto, ancho;
 	private int posX, posY;
 	private boolean hitbox;
-	private int formaFicha;
+	private int formaFicha, estado;
 
+
+	public int getEstado() {
+		return estado;
+	}
+
+	public void setEstado(int estado) {
+		this.estado = estado;
+	}
 
 	public Color getColor() {
 		return color;
@@ -86,6 +96,7 @@ public class Ficha {
 		this.color=Color.white;
 		this.formaFicha=FICHA_I;
 		this.hitbox=false;
+		this.estado=LIBRE;
 	}
 
 	public Ficha(int posX, int posY, Color color, int formaFicha, boolean hitbox){
@@ -96,6 +107,7 @@ public class Ficha {
 		this.color=color;
 		this.formaFicha=formaFicha;
 		this.hitbox=hitbox;
+		this.estado=LIBRE;
 	}
 
 }

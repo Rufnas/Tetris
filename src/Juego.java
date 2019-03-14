@@ -22,6 +22,8 @@ public class Juego extends Canvas {
 	public static final int FACIL=3;
 	public static final int NORMAL=2;
 	public static final int DIFICIL=1;
+	public static final int LIBRE=0;
+	public static final int EMPAREJADO=1;
 
 	private Controles controles;
 	private Ficha limiteAbajo[];
@@ -49,6 +51,7 @@ public class Juego extends Canvas {
 		crearPrimeraFicha();
 		fichaInmovil=new Ficha[100];
 		limiteAbajo=new Ficha[10];
+		crearFichaSiguiente();
 	}
 
 	private void registrarEventos() {
@@ -58,7 +61,8 @@ public class Juego extends Canvas {
 			public void actionPerformed(ActionEvent e) {
 				requestFocus();//ESTO ES TEMPORAL
 				agregarHitbox();
-				limiteAbajo();	
+				limiteAbajo();
+				comprobarLinea();
 				contador++;
 				int dificultad = NORMAL;
 				if (dificultad==FACIL) {
@@ -145,11 +149,17 @@ public class Juego extends Canvas {
 					}
 					comprobarFondo();
 				}
-				
 				repaint();				
 			}
 		});
 
+	}
+	//AUN FALTA POR HACER, HAY QUE IR COMPROBANDO MULTIPLES X CADA 30~ Y -------------------------------------------
+	protected void comprobarLinea() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < 20; i++) {
+			
+		}
 	}
 
 	protected void comprobarFondo() {
@@ -157,6 +167,7 @@ public class Juego extends Canvas {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 10; k++) {
 					if(campoFicha1[i][j].isHitbox() && campoFicha1[i][j].getPosX()==limiteAbajo[k].getPosX() && campoFicha1[i][j].getPosY()==limiteAbajo[k].getPosY()){
+						campoFicha1[0][0].setEstado(EMPAREJADO);
 						reloj.stop();
 					}
 				}
@@ -183,8 +194,12 @@ public class Juego extends Canvas {
 		}
 		moverFicha(campoFicha1[0][0].getFormaFicha(), fichaPos);
 		mostrarFicha(g);
+		if (campoFicha1[0][0].getEstado()==EMPAREJADO) {
+			dibujarFichaEmparejada(g);
+
+		}
 	}
-	
+
 	@Override
 	public void update(Graphics g) {
 		// TODO Auto-generated method stub
@@ -194,6 +209,19 @@ public class Juego extends Canvas {
 		paint(pantVirtual);
 		//volcar la imagen de la pantVirtual sobre la pantalla real
 		g.drawImage(buffer, 0, 0, 300, 600, this);
+	}
+
+	private void dibujarFichaEmparejada(Graphics g) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (campoFicha1[i][j].isHitbox()) {
+					//g.setColor(Color.YELLOW);
+					g.setColor(campoFicha1[i][j].getColor());
+					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+				}
+			}
+		}
 	}
 
 	private void limiteAbajo() {
@@ -213,7 +241,6 @@ public class Juego extends Canvas {
 				if (campoFicha1[i][j].isHitbox()) {
 					g.setColor(campoFicha1[i][j].getColor());
 					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-					
 				} else {
 					/*g.setColor(Color.GRAY);
 					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);*/
@@ -355,7 +382,7 @@ public class Juego extends Canvas {
 		}
 
 	}
-	//POR AHORA SE INUTIL-----------------------------------------------------------------------------------------
+	//POR AHORA ES INUTIL-----------------------------------------------------------------------------------------
 	private void agregarHitbox(){
 		hitboxFicha=new Rectangle[4];
 		for (int i = 1; i < 5; i++) {
@@ -399,7 +426,7 @@ public class Juego extends Canvas {
 				int aux2=30;
 				aux2=aux2*i;
 				for (int j = 1; j < 5; j++) {
-					ficha=new Ficha(60+aux2, 0+aux, Color.GREEN, FICHA_I, false);
+					ficha=new Ficha(60+aux2, 0+aux, Color.GRAY, FICHA_I, false);
 					campoFicha1[i-1][j-1]=ficha;
 					aux=aux+30;
 				}
@@ -475,7 +502,7 @@ public class Juego extends Canvas {
 			break;
 		}
 	}
-	
+
 	private void crearFichaSiguiente() {
 		// TODO Auto-generated method stub
 		int numeroFicha=r.nextInt(4);
@@ -579,5 +606,6 @@ public class Juego extends Canvas {
 			campoFicha2[3][0].setHitbox(true);
 			break;
 		}
+		System.out.println(campoFicha2[0][0].getFormaFicha());
 	}
 }
