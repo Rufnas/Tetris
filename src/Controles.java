@@ -50,13 +50,15 @@ public class Controles extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		juego=new Juego(Controles.this);
-		juego.setBounds(214, 21, 300, 600);
-		contentPane.add(juego);
-		
 		nextFicha=new NextFicha(Controles.this);
 		nextFicha.setBounds(34, 276, 150, 150);
 		contentPane.add(nextFicha);
+		
+		juego=new Juego(Controles.this, nextFicha);
+		juego.setBounds(214, 21, 300, 600);
+		contentPane.add(juego);
+		
+		
 		
 		grpNiveles=new ButtonGroup();
 		

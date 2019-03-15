@@ -26,6 +26,7 @@ public class Juego extends Canvas {
 	public static final int EMPAREJADO=1;
 
 	private Controles controles;
+	private NextFicha nextficha;
 	private Ficha limiteAbajo[];
 	private Ficha fichaInmovil[];
 	private Ficha ficha;
@@ -43,15 +44,17 @@ public class Juego extends Canvas {
 	/**
 	 * Create the panel.
 	 */
-	public Juego(Controles controles) {
+	public Juego(Controles controles, NextFicha nextficha) {
 		setBackground(Color.BLACK);
 		this.controles=controles;
+		this.nextficha=nextficha;
 		ficha=new Ficha();
 		registrarEventos();
 		crearPrimeraFicha();
 		fichaInmovil=new Ficha[100];
 		limiteAbajo=new Ficha[10];
 		crearFichaSiguiente();
+		nextficha.setFicha(campoFicha2);
 	}
 
 	private void registrarEventos() {
@@ -63,6 +66,7 @@ public class Juego extends Canvas {
 				agregarHitbox();
 				limiteAbajo();
 				comprobarLinea();
+				nextficha.repaint();
 				contador++;
 				int dificultad = NORMAL;
 				if (dificultad==FACIL) {
@@ -134,16 +138,39 @@ public class Juego extends Canvas {
 						}
 					}
 					if (key==KeyEvent.VK_RIGHT) {
-						for (int i = 0; i < 4; i++) {
-							for (int j = 0; j < 4; j++) {
-								campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()+30);
+						int comprobR=0;
+						for (int i = 3; i >= 0; i--) {
+							for (int j = 3; j >= 0; j--) {
+								if (campoFicha1[i][j].isHitbox() && campoFicha1[i][j].getPosX()>240) {
+									comprobR=1;
+									break;
+								}
 							}
 						}
+						if (comprobR==0) {
+							for (int i = 0; i < 4; i++) {
+								for (int j = 0; j < 4; j++) {
+									campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()+30);
+								}
+							}
+						}
+						
 					}
 					if (key==KeyEvent.VK_LEFT) {
+						int comprobI=0;
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
-								campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()-30);
+								if (campoFicha1[i][j].isHitbox() && campoFicha1[i][j].getPosX()<30) {
+									comprobI=1;
+									break;
+								}
+							}
+						}
+						if (comprobI==0) {
+							for (int i = 0; i < 4; i++) {
+								for (int j = 0; j < 4; j++) {
+									campoFicha1[i][j].setPosX(campoFicha1[i][j].getPosX()-30);
+								}
 							}
 						}
 					}
