@@ -31,12 +31,14 @@ public class Juego extends Canvas {
 	private Ficha limiteAbajo[];
 	private Ficha[][] piezasInmoviles = new Ficha[10][20];
 	private Ficha ficha;
-	private Ficha campoFicha1[][];
-	private Ficha campoFicha2[][];
+	private Ficha[][] campoFicha1;
+	private Ficha[][] campoFicha2;
 	private Random r=new Random();
 	private Timer reloj;
 	int contador=0;
 	int fichaPos = 3;
+	int casillaX=0, casillaY=0;
+	private int numeroPiezas=1;
 	private Rectangle hitboxFicha[];
 	//Para el doble buffer (para eliminar el parpadeo al dibujar)
 	private Graphics pantVirtual;
@@ -51,6 +53,7 @@ public class Juego extends Canvas {
 		this.nextficha=nextficha;
 		ficha=new Ficha();
 		registrarEventos();
+		crearFondo();
 		crearPrimeraFicha();
 		limiteAbajo=new Ficha[10];
 		crearFichaSiguiente();
@@ -71,6 +74,7 @@ public class Juego extends Canvas {
 				int dificultad = NORMAL;
 				if (dificultad==FACIL) {
 					if (contador==3) {
+						comprobarMovimiento();
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
 								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
@@ -82,6 +86,7 @@ public class Juego extends Canvas {
 				}
 				if (dificultad==NORMAL) {
 					if (contador==2) {
+						comprobarMovimiento();
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
 								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
@@ -93,6 +98,7 @@ public class Juego extends Canvas {
 				}
 				if(dificultad==DIFICIL){
 					if (contador==1) {
+						comprobarMovimiento();
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
 								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
@@ -103,7 +109,6 @@ public class Juego extends Canvas {
 					}
 					repaint();
 				}
-				comprobarFondo();
 			}
 
 		});
@@ -132,6 +137,7 @@ public class Juego extends Canvas {
 						if(fichaPos>=4) fichaPos=0;
 					}
 					if (key==KeyEvent.VK_DOWN) {
+						comprobarMovimiento();
 						for (int i = 0; i < 4; i++) {
 							for (int j = 0; j < 4; j++) {
 								campoFicha1[i][j].setPosY(campoFicha1[i][j].getPosY()+30);
@@ -175,7 +181,7 @@ public class Juego extends Canvas {
 							}
 						}
 					}
-					comprobarFondo();
+
 				}
 				repaint();				
 			}
@@ -190,21 +196,52 @@ public class Juego extends Canvas {
 		}
 	}
 
-	protected void comprobarFondo() {
+	protected boolean comprobarMovimiento() {
+		//cont 1 = si puedes moverla, 0 = no puedes moverla, fijar ficha
+		int cont=1;
+		int campo[] = new int[4];
+		int fondo[] = new int[10];
+		//HAY QUE REVISAR TODO ESTO, SOBRETODO LOS DOS FOR DIRECTOS DE ABAJO...
+		//QUE SON PARA SABER CUAL ES LA FICHA MAS ABAJO Y CUAL ES LA BLOQUEADA MAS ARRIBA
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				for (int k = 0; k < 10; k++) {
-					if(campoFicha1[i][j].isHitbox() && campoFicha1[i][j].getPosX()==limiteAbajo[k].getPosX() && campoFicha1[i][j].getPosY()==limiteAbajo[k].getPosY()){
-						campoFicha1[0][0].setEstado(EMPAREJADO);
-						repaint();
-						obtenerSiguienteFicha(campoFicha2);
-						crearFichaSiguiente();
-						nextficha.setFicha(campoFicha2);
-						nextficha.repaint();
+				if (campoFicha1[j][i].isHitbox()) {
+					campo[i]=j;
+				}
+			}
+		}
+		for (int i = 0; i < 10; i++) {
+			for (int j = 18; j >= 0; j--) {
+				if (piezasInmoviles[i][j].isHitbox()) {
+					fondo[i]=j;
+				}
+			}
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int k = 0; k < 20; k++) {
+				for (int j = 0; j < 10; j++) {
+					if (campoFicha1[campo[i]][i].getPosY()==piezasInmoviles[fondo[j]][k].getPosY()){
+						cont=0;
 					}
 				}
 			}
-		} 
+
+		}
+		if (campoFicha1[1][2].getPosY()+60==piezasInmoviles[1][19].getPosY() && campoFicha1[1][2].getPosX()==piezasInmoviles[1][19].getPosX()) {
+
+		}
+		if(cont==1){
+			System.out.println("Puede moverse");
+			return true;
+		} else {
+			System.out.println("NO Puede moverse");
+			return false;
+		}
+
+	}
+
+	protected void bloquearFichas(){
+
 	}
 
 
@@ -214,7 +251,6 @@ public class Juego extends Canvas {
 		super.paint(g);
 		g.setColor(Color.GRAY);
 		//CREAMOS Y MOSTRAMOS EL FONDO, QUE ES UN ARRAY DE FICHAS DONDE SOLO DIBUJAMOS LAS LINEAS
-		crearFondo();
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 20; j++) {
 				g.drawRect(piezasInmoviles[i][j].getPosX(), piezasInmoviles[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
@@ -222,9 +258,9 @@ public class Juego extends Canvas {
 		}
 		//ESTO QUE ESTA AQUI ABAJO ES PARA HACER EL HITBOX DEL FONDO
 		limiteAbajo();
-		g.setColor(limiteAbajo[0].getColor());
+		g.setColor(piezasInmoviles[0][19].getColor());
 		for (int i = 0; i < 10; i++) {
-			g.fillRect(limiteAbajo[i].getPosX(), limiteAbajo[i].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
+			g.fillRect(piezasInmoviles[i][19].getPosX(), piezasInmoviles[i][19].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
 		}
 		//ROTACION DE LA FICHA
 		moverFicha(campoFicha1[0][0].getFormaFicha(), fichaPos);
@@ -261,27 +297,15 @@ public class Juego extends Canvas {
 
 	private void dibujarFichaEmparejada(Graphics g) {
 		// TODO Auto-generated method stub
-		if (campoFicha1[0][0].getEstado()==EMPAREJADO) {
-			System.out.println("queloque");
-		}
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (campoFicha1[i][j].isHitbox()) {
-					g.setColor(Color.YELLOW);
-					//g.setColor(campoFicha1[i][j].getColor());
-					g.fillRect(campoFicha1[i][j].getPosX(), campoFicha1[i][j].getPosY(), TAMAÑO_FICHA, TAMAÑO_FICHA);
-					//System.out.println("hola");
-				}
-			}
-		}
+
 	}
 
 	private void limiteAbajo() {
-		ficha=new Ficha(0, 570, Color.WHITE, NO_FICHA, false);
-		limiteAbajo[0]=ficha;
+		ficha=new Ficha(0, 570, Color.WHITE, NO_FICHA, true);
+		piezasInmoviles[0][19]=ficha;
 		for (int i = 1; i < 10; i++) {
-			ficha=new Ficha(i*30, 570, Color.WHITE, NO_FICHA, false);
-			limiteAbajo[i]=ficha;
+			ficha=new Ficha(i*30, 570, Color.WHITE, NO_FICHA, true);
+			piezasInmoviles[i][19]=ficha;
 		}
 
 	}
@@ -453,7 +477,7 @@ public class Juego extends Canvas {
 	private void crearPrimeraFicha() {
 		// TODO Auto-generated method stub
 		int numeroFicha=r.nextInt(4);
-		//numeroFicha=2; //Numero provisional para probar la creacion de fichas
+		//numeroFicha=0; //Numero provisional para probar la creacion de fichas
 		campoFicha1=new Ficha[4][4];
 		switch (numeroFicha) {
 		case 0:
